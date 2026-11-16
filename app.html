@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Au fil des km — Démo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* ============ Système ============ */
+:root{
+  --fond:#FAF5F1;
+  --surface:#FFFFFF;
+  --surface2:#FDF9F6;
+  --encre:#2B1022;
+  --encre2:rgba(43,16,34,.62);
+  --encre3:rgba(43,16,34,.42);
+  --trait:rgba(43,16,34,.09);
+  --rose:#F0447D;
+  --rose-doux:#FBE9F0;
+  --lilas:#8E7BFF;
+  --lilas-doux:#EFEBFF;
+  --menthe:#2FBD97;
+  --menthe-doux:#E2F7F0;
+  --ambre:#F5A623;
+  --ambre-doux:#FEF2DC;
+  --degr:linear-gradient(120deg,#F0447D,#B860E8 55%,#8E7BFF);
+  --ombre:0 1px 2px rgba(43,16,34,.04), 0 12px 30px -18px rgba(43,16,34,.2);
+  --r-l:22px; --r-m:16px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --fond:#160810; --surface:#211018; --surface2:#1B0B13;
+    --encre:#F7E9EF; --encre2:rgba(247,233,239,.66); --encre3:rgba(247,233,239,.44);
+    --trait:rgba(247,233,239,.09);
+    --rose:#FF5E93; --rose-doux:#3A1524;
+    --lilas:#A796FF; --lilas-doux:#261B40;
+    --menthe:#3FD6AC; --menthe-doux:#0F2E25;
+    --ambre:#FFB547; --ambre-doux:#332410;
+    --degr:linear-gradient(120deg,#FF5E93,#C879F0 55%,#A796FF);
+    --ombre:0 1px 2px rgba(0,0,0,.3), 0 14px 32px -16px rgba(0,0,0,.55);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --fond:#160810; --surface:#211018; --surface2:#1B0B13;
+  --encre:#F7E9EF; --encre2:rgba(247,233,239,.66); --encre3:rgba(247,233,239,.44);
+  --trait:rgba(247,233,239,.09);
+  --rose:#FF5E93; --rose-doux:#3A1524;
+  --lilas:#A796FF; --lilas-doux:#261B40;
+  --menthe:#3FD6AC; --menthe-doux:#0F2E25;
+  --ambre:#FFB547; --ambre-doux:#332410;
+  --degr:linear-gradient(120deg,#FF5E93,#C879F0 55%,#A796FF);
+  --ombre:0 1px 2px rgba(0,0,0,.3), 0 14px 32px -16px rgba(0,0,0,.55);
+  color-scheme:dark;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--fond)}
+body{
+  background:var(--fond);color:var(--encre);
+  font-family:"Figtree",system-ui,sans-serif;font-size:15.5px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent}
+input,textarea{font:inherit;color:var(--encre)}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2.5px solid var(--lilas);outline-offset:2px;border-radius:8px}
+[hidden]{display:none!important}
+.serif{font-family:"Instrument Serif",Georgia,serif;font-weight:400}
+.num{font-variant-numeric:tabular-nums}
+svg{display:block}
+
+/* ============ Shell ============ */
+.shell{display:flex;min-height:100vh}
+.side{display:none}
+.corps{flex:1;min-width:0;max-width:760px;margin:0 auto;position:relative}
+@media (min-width:980px){
+  .side{
+    display:flex;flex-direction:column;gap:4px;
+    width:250px;flex:none;position:sticky;top:0;height:100vh;
+    padding:26px 18px calc(22px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));
+    border-right:1px solid var(--trait);
+  }
+  .corps{max-width:920px;padding-right:max(0px,env(safe-area-inset-right,0px))}
+}
+.marque{display:flex;align-items:center;gap:10px;padding:6px 10px 22px}
+.marque .rond{width:36px;height:36px;border-radius:12px;background:var(--degr);color:#fff;display:grid;place-content:center;flex:none}
+.marque .rond svg{width:18px;height:18px}
+.marque b{font-weight:800;font-size:1.02rem;letter-spacing:-.01em}
+.marque small{display:block;font-weight:700;font-size:.68rem;color:var(--encre3);letter-spacing:.09em}
+.nav-i{
+  display:flex;align-items:center;gap:12px;width:100%;
+  padding:11px 12px;border-radius:13px;font-weight:600;font-size:.95rem;color:var(--encre2);
+  transition:background .15s ease,color .15s ease, translate .15s ease;
+}
+.nav-i svg{width:20px;height:20px;flex:none}
+.nav-i:hover{background:var(--surface);color:var(--encre);translate:2px 0}
+.nav-i.on{background:var(--rose-doux);color:var(--rose);font-weight:700}
+.side .fin{margin-top:auto;display:flex;align-items:center;gap:10px;padding:14px 10px 0;border-top:1px solid var(--trait)}
+.side .fin small{font-weight:600;font-size:.76rem;color:var(--encre3);display:block}
+.side .fin b{font-weight:700;font-size:.9rem}
+
+/* ============ Avatars ============ */
+.av{width:34px;height:34px;border-radius:50%;display:grid;place-content:center;font-weight:800;font-size:.78rem;color:#fff;flex:none;letter-spacing:.02em}
+.av.s{width:25px;height:25px;font-size:.62rem}
+.av.l{width:44px;height:44px;font-size:.98rem}
+.pile{display:flex}
+.pile .av{margin-left:-7px;border:2px solid var(--surface)}
+.pile .av:first-child{margin-left:0}
+.pile .plus{background:var(--surface2);color:var(--encre2);border:2px solid var(--surface);font-size:.6rem}
+
+/* ============ Top bar (mobile) ============ */
+.haut{
+  position:sticky;top:env(safe-area-inset-top,0px);z-index:30;
+  background:color-mix(in srgb,var(--fond) 85%,transparent);backdrop-filter:blur(16px);
+  display:flex;align-items:center;gap:12px;
+  padding:13px max(18px,env(safe-area-inset-right,0px)) 11px max(18px,env(safe-area-inset-left,0px));
+  border-bottom:1px solid var(--trait);
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--fond)}
+.haut .qui b{display:block;font-weight:800;font-size:1.04rem;line-height:1.2;letter-spacing:-.01em}
+.haut .qui small{font-weight:600;font-size:.77rem;color:var(--encre2)}
+.serie{
+  margin-left:auto;display:inline-flex;align-items:center;gap:6px;
+  background:var(--ambre-doux);color:var(--encre);border-radius:999px;
+  font-weight:700;font-size:.82rem;padding:7px 13px;
+  transition:transform .15s cubic-bezier(.3,1.6,.4,1);
+}
+.serie:active{transform:scale(1.12) rotate(-3deg)}
+.serie svg{width:14px;height:14px;color:var(--ambre)}
+@media (min-width:980px){.haut{display:none}}
+.bando{
+  text-align:center;font-weight:700;font-size:.68rem;letter-spacing:.07em;
+  color:var(--encre2);background:var(--surface2);border-bottom:1px solid var(--trait);
+  padding:5px 12px;
+}
+
+/* ============ Écrans ============ */
+.ecran{padding:20px max(18px,env(safe-area-inset-right,0px)) 122px max(18px,env(safe-area-inset-left,0px))}
+@media (min-width:980px){.ecran{padding:30px 36px 60px}}
+.ecran>*{animation:pose .32s ease both}
+.ecran>*:nth-child(3){animation-delay:.04s}
+.ecran>*:nth-child(n+4){animation-delay:.08s}
+@keyframes pose{from{opacity:0;translate:0 6px}to{opacity:1;translate:0 0}}
+.titre-e{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:3px}
+.titre-e h2{font-weight:800;font-size:1.45rem;letter-spacing:-.02em}
+.titre-e .act{font-weight:700;font-size:.87rem;color:var(--rose)}
+.sous-e{color:var(--encre2);font-weight:500;font-size:.94rem;margin-bottom:18px}
+
+.carte{background:var(--surface);border:1px solid var(--trait);border-radius:var(--r-l);box-shadow:var(--ombre);padding:18px;margin-bottom:14px}
+.carte h3{font-weight:800;font-size:.99rem;letter-spacing:-.01em}
+.etiq{display:inline-flex;align-items:center;gap:5px;font-weight:700;font-size:.73rem;border-radius:999px;padding:4px 10px}
+.etiq svg{width:12px;height:12px}
+.etiq.rose{background:var(--rose-doux);color:var(--rose)}
+.etiq.lilas{background:var(--lilas-doux);color:var(--lilas)}
+.etiq.menthe{background:var(--menthe-doux);color:var(--menthe)}
+.etiq.ambre{background:var(--ambre-doux);color:#9A6206}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .etiq.ambre{color:var(--ambre)}}
+:root[data-theme="dark"] .etiq.ambre{color:var(--ambre)}
+
+.btn-p{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--encre);color:var(--fond);font-weight:700;font-size:.95rem;
+  padding:13px 20px;border-radius:14px;width:100%;
+  transition:transform .13s ease, filter .13s ease;
+}
+.btn-p.rose{background:var(--rose);color:#fff;box-shadow:0 10px 22px -10px color-mix(in srgb,var(--rose) 75%,transparent)}
+.btn-p:hover{transform:translateY(-1px);filter:brightness(1.06)}
+.btn-p:active{transform:scale(.97)}
+.btn-p.fantome{background:var(--surface);color:var(--encre);border:1px solid var(--trait)}
+.btn-p svg{width:17px;height:17px}
+.deux{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (min-width:720px){.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}.g2 .carte{margin-bottom:0}}
+
+.ligne-s{display:flex;border-top:1px solid var(--trait);margin-top:14px;padding-top:12px}
+.ligne-s>div{flex:1;border-left:1px solid var(--trait);padding-left:14px}
+.ligne-s>div:first-child{border-left:none;padding-left:0}
+.ligne-s b{display:block;font-weight:800;font-size:1.14rem;letter-spacing:-.01em}
+.ligne-s span{font-weight:600;font-size:.74rem;color:var(--encre3)}
+
+/* ---- grands chiffres éditoriaux ---- */
+.chif{font-family:"Instrument Serif",Georgia,serif;font-weight:400;letter-spacing:0}
+
+/* ---- progression + jalons ---- */
+.prog-z{position:relative;margin-top:16px;padding-top:12px}
+.prog{height:8px;border-radius:999px;background:var(--rose-doux);overflow:hidden}
+.prog i{display:block;height:100%;width:0;border-radius:999px;background:var(--degr);transition:width 1.2s cubic-bezier(.2,.7,.2,1)}
+.jalon{position:absolute;top:2px;translate:-50% 0;display:grid;place-content:center;width:22px;height:22px;border-radius:50%;background:var(--surface);border:1px solid var(--trait);color:var(--encre3);scale:.7;opacity:.6;transition:scale .4s cubic-bezier(.3,1.6,.4,1), opacity .3s ease, background .3s ease, color .3s ease}
+.jalon svg{width:11px;height:11px}
+.jalon.ok{scale:1;opacity:1;background:var(--rose);border-color:var(--rose);color:#fff}
+.prog-leg{display:flex;justify-content:space-between;font-weight:700;font-size:.69rem;color:var(--encre3);margin-top:9px}
+
+/* ---- séance ---- */
+.seance{display:flex;gap:14px;align-items:center}
+.seance .ico{width:52px;height:52px;flex:none;border-radius:16px;background:var(--lilas-doux);color:var(--lilas);display:grid;place-content:center}
+.seance .ico svg{width:25px;height:25px}
+.seance b{display:block;font-weight:800;font-size:1rem}
+.seance small{font-weight:600;font-size:.83rem;color:var(--encre2)}
+.coche{margin-left:auto;flex:none;width:32px;height:32px;border-radius:50%;border:2px solid var(--trait);display:grid;place-content:center;transition:all .25s ease}
+.coche svg{width:16px;height:16px;stroke:currentColor;color:transparent}
+.coche svg path{stroke-dasharray:24;stroke-dashoffset:24;transition:stroke-dashoffset .35s ease .05s}
+.coche.ok{background:var(--menthe);border-color:var(--menthe)}
+.coche.ok svg{color:#fff}
+.coche.ok svg path{stroke-dashoffset:0}
+.sem-pts{display:flex;gap:7px;margin-top:12px}
+.sem-pts span{flex:1;text-align:center;font-weight:700;font-size:.68rem;color:var(--encre3)}
+.sem-pts i{display:block;height:7px;border-radius:999px;background:var(--trait);margin-bottom:5px;font-style:normal}
+.sem-pts .fait i{background:var(--menthe)}
+.sem-pts .auj i{background:var(--rose);animation:pulse-pt 2s ease-in-out infinite}
+@keyframes pulse-pt{50%{opacity:.45}}
+
+/* ---- feed / carnet ---- */
+.entree{padding:16px 18px;position:relative}
+.no-page{position:absolute;top:16px;right:18px;font-family:"Instrument Serif",Georgia,serif;font-style:italic;font-size:.95rem;color:var(--encre3)}
+.entree .qui-l{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.entree .qui-l b{font-weight:700;font-size:.94rem;display:block;line-height:1.25}
+.entree .qui-l small{font-weight:600;font-size:.77rem;color:var(--encre3)}
+.trace{
+  width:100%;height:116px;border-radius:var(--r-m);
+  background-color:var(--surface2);
+  background-image:radial-gradient(var(--trait) 1px, transparent 1.4px);
+  background-size:16px 16px;background-position:center;
+  border:1px solid var(--trait);margin-bottom:12px;
+}
+.trace .ombre-t{fill:none;stroke:var(--encre);opacity:.06;stroke-width:8;stroke-linecap:round;stroke-linejoin:round}
+.trace .vif{fill:none;stroke:url(#degL);stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.trace .dep{fill:var(--surface);stroke:var(--lilas);stroke-width:2.4}
+.trace .arr{fill:var(--rose);stroke:var(--surface);stroke-width:2.4}
+.trace text{font-family:"Figtree",sans-serif;font-weight:700;font-size:7.5px;fill:var(--encre3);letter-spacing:.06em}
+.cond{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.cond span{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:.76rem;color:var(--encre2);background:var(--surface2);border:1px solid var(--trait);border-radius:999px;padding:5px 11px}
+.cond svg{width:13px;height:13px;color:var(--encre3)}
+.cond .eff i{width:5px;height:5px;border-radius:50%;background:var(--trait);display:inline-block;margin-left:2px}
+.cond .eff i.on{background:var(--rose)}
+.entree .citation{font-family:"Instrument Serif",Georgia,serif;font-size:1.24rem;line-height:1.42;margin-bottom:12px}
+.mesures{display:flex;border-block:1px solid var(--trait);padding-block:10px;margin-bottom:12px}
+.mesures>div{flex:1;border-left:1px solid var(--trait);padding-left:12px}
+.mesures>div:first-child{border-left:none;padding-left:0}
+.mesures b{display:block;font-weight:800;font-size:1.02rem}
+.mesures span{font-weight:700;font-size:.68rem;color:var(--encre3);letter-spacing:.05em}
+.reactions{display:flex;gap:10px;align-items:center}
+.reac{
+  position:relative;display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:.85rem;color:var(--encre2);
+  border:1px solid var(--trait);border-radius:999px;padding:7px 13px;background:var(--surface);
+  transition:transform .14s cubic-bezier(.3,1.6,.4,1), background .15s ease,color .15s ease,border-color .15s ease;
+}
+.reac svg{width:16px;height:16px}
+.reac:active{transform:scale(1.14)}
+.reac.on{background:var(--rose-doux);color:var(--rose);border-color:transparent}
+.reac .plume{color:var(--lilas)}
+.mini-coeur{position:fixed;width:13px;height:13px;color:var(--rose);z-index:90;pointer-events:none}
+.filtre{display:flex;gap:8px;margin-bottom:16px}
+.filtre button{font-weight:700;font-size:.87rem;padding:9px 16px;border-radius:999px;color:var(--encre2);background:var(--surface);border:1px solid var(--trait);transition:all .15s ease}
+.filtre button.on{background:var(--encre);color:var(--fond);border-color:var(--encre)}
+
+/* ---- listes ---- */
+.rangs .rang{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--trait)}
+.rangs .rang:last-child{border-bottom:none;padding-bottom:2px}
+.rang .inf{min-width:0}
+.rang .inf b{display:block;font-weight:700;font-size:.92rem;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rang .inf small{font-weight:600;font-size:.76rem;color:var(--encre3)}
+.rang .val{margin-left:auto;font-weight:800;font-size:.93rem;flex:none}
+.rang .val small{display:block;text-align:right;font-weight:600;font-size:.7rem;color:var(--encre3)}
+.rang.neuf{animation:glisse-r .5s cubic-bezier(.2,1.1,.4,1) both;background:linear-gradient(90deg,var(--menthe-doux),transparent);border-radius:12px;padding-inline:8px;margin-inline:-8px}
+@keyframes glisse-r{from{opacity:0;translate:0 -14px}to{opacity:1;translate:0 0}}
+
+/* ---- badges ---- */
+.badges{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 6px;scrollbar-width:none}
+.badge{flex:none;width:86px;text-align:center}
+.badge .med{
+  width:62px;height:62px;margin:0 auto 7px;border-radius:50%;
+  display:grid;place-content:center;color:#fff;position:relative;overflow:hidden;
+  border:2px solid var(--surface);box-shadow:var(--ombre);
+}
+.badge .med svg{width:28px;height:28px}
+.badge .med::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.5) 48%,transparent 60%);translate:-110% 0;animation:eclat 4.5s ease-in-out infinite}
+.badge:nth-child(2) .med::after{animation-delay:.7s}
+.badge:nth-child(3) .med::after{animation-delay:1.4s}
+.badge:nth-child(4) .med::after{animation-delay:2.1s}
+@keyframes eclat{12%{translate:110% 0}13%,100%{translate:110% 0}}
+.badge b{font-weight:700;font-size:.74rem;display:block;line-height:1.25}
+.badge small{font-weight:600;font-size:.66rem;color:var(--encre3)}
+.badge.verrou .med{background:var(--surface2)!important;color:var(--encre3);border:2px dashed var(--trait);box-shadow:none}
+.badge.verrou .med::after{display:none}
+
+/* ---- classement villes ---- */
+.cl-v{display:grid;gap:12px;margin-top:14px}
+.cl-l{display:grid;grid-template-columns:20px 84px 1fr auto;gap:10px;align-items:center;font-weight:700;font-size:.89rem}
+.cl-l .pos{color:var(--encre3);font-weight:800}
+.cl-l .rail{height:9px;border-radius:999px;background:var(--surface2);border:1px solid var(--trait);overflow:hidden}
+.cl-l .rail i{display:block;height:100%;width:0;border-radius:999px;transition:width 1s cubic-bezier(.2,.7,.2,1)}
+.cl-l:nth-child(1) .rail i{background:var(--rose)}
+.cl-l:nth-child(2) .rail i{background:var(--lilas)}
+.cl-l:nth-child(3) .rail i{background:var(--ambre)}
+.cl-l:nth-child(n+4) .rail i{background:var(--menthe)}
+.cl-l .v{font-weight:800}
+.cl-l .v small{display:block;font-weight:600;font-size:.68rem;color:var(--encre3);text-align:right}
+
+/* ---- sorties ---- */
+.chips{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chip{flex:none;font-weight:700;font-size:.87rem;padding:9px 16px;border-radius:999px;background:var(--surface);border:1px solid var(--trait);color:var(--encre2);transition:all .15s ease}
+.chip.on{background:var(--encre);color:var(--fond);border-color:var(--encre)}
+.prochaine{background:var(--degr);color:#fff;border:none;display:flex;align-items:center;gap:14px}
+.prochaine .cd{flex:none;text-align:center;background:rgba(255,255,255,.18);border-radius:var(--r-m);padding:10px 14px}
+.prochaine .cd b{display:block;font-weight:800;font-size:1.5rem;line-height:1}
+.prochaine .cd span{font-weight:700;font-size:.66rem;letter-spacing:.06em;opacity:.85}
+.prochaine .inf b{display:block;font-weight:800;font-size:.98rem}
+.prochaine .inf small{font-weight:600;font-size:.82rem;opacity:.85}
+.sortie{display:flex;gap:14px;padding:16px 18px}
+.quand{flex:none;width:54px;text-align:center;background:var(--surface2);border:1px solid var(--trait);border-radius:var(--r-m);padding:8px 4px;height:fit-content}
+.quand b{display:block;font-weight:800;font-size:1.22rem;line-height:1.1}
+.quand span{font-weight:700;font-size:.66rem;letter-spacing:.06em;color:var(--rose)}
+.sortie .det{flex:1;min-width:0}
+.sortie .det b{display:block;font-weight:800;font-size:.97rem;line-height:1.3}
+.sortie .det .ou{font-weight:600;font-size:.83rem;color:var(--encre2);margin-top:1px}
+.sortie .meta{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.sortie .meta small{font-weight:600;font-size:.77rem;color:var(--encre3)}
+.btn-join{
+  flex:none;align-self:center;font-weight:700;font-size:.84rem;color:#fff;background:var(--rose);
+  border-radius:12px;padding:10px 15px;
+  transition:transform .14s cubic-bezier(.3,1.5,.4,1), background .2s ease,color .2s ease;
+}
+.btn-join:active{transform:scale(.92)}
+.btn-join.ok{background:var(--menthe-doux);color:var(--menthe)}
+
+/* ---- studio ---- */
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media (min-width:720px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:var(--surface);border:1px solid var(--trait);border-radius:var(--r-l);box-shadow:var(--ombre);padding:16px;transition:translate .15s ease, box-shadow .15s ease}
+.kpi:hover{translate:0 -3px}
+.kpi b{display:block;font-family:"Instrument Serif",Georgia,serif;font-weight:400;font-size:1.8rem;line-height:1.1}
+.kpi span{font-weight:600;font-size:.77rem;color:var(--encre2)}
+.delta{display:inline-flex;align-items:center;gap:4px;font-weight:700;font-size:.72rem;color:var(--menthe);margin-top:4px}
+.delta svg{width:11px;height:11px}
+.graphe{display:flex;align-items:flex-end;gap:12px;height:150px;margin-top:18px;border-bottom:1px solid var(--trait);padding-bottom:10px}
+.gb{flex:1;display:flex;flex-direction:column;align-items:center;gap:7px;font-weight:600;font-size:.72rem;color:var(--encre3)}
+.gb b{font-weight:700;font-size:.68rem;color:var(--encre3)}
+.gb i{width:100%;max-width:22px;border-radius:999px;background:var(--rose-doux);height:0;transition:height .9s cubic-bezier(.2,.7,.2,1), background .15s ease}
+.gb i:hover{background:color-mix(in srgb,var(--rose) 35%,var(--rose-doux))}
+.gb:last-child i{background:var(--rose)}
+.gb:last-child b,.gb:last-child{color:var(--encre)}
+.toggle{margin-left:auto;flex:none;width:44px;height:26px;border-radius:999px;background:var(--trait);position:relative;transition:background .2s ease}
+.toggle::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .22s cubic-bezier(.3,1.4,.4,1)}
+.toggle.on{background:var(--menthe)}
+.toggle.on::after{left:21px}
+/* simulateur */
+.simu .gros{font-family:"Instrument Serif",Georgia,serif;font-weight:400;font-size:2.4rem;line-height:1.1}
+.simu .gros small{font-weight:600;font-size:.9rem;color:var(--encre2);letter-spacing:0}
+.curseur{margin-top:14px}
+.curseur label{display:flex;justify-content:space-between;font-weight:700;font-size:.82rem;color:var(--encre2);margin-bottom:7px}
+.curseur label b{color:var(--encre)}
+input[type=range]{width:100%;appearance:none;height:9px;border-radius:999px;background:var(--rose-doux);outline-offset:4px}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:24px;height:24px;border-radius:50%;background:var(--rose);border:3px solid var(--surface);box-shadow:0 2px 8px rgba(43,16,34,.3);cursor:grab}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--rose);border:3px solid var(--surface);box-shadow:0 2px 8px rgba(43,16,34,.3);cursor:grab}
+
+/* ---- tabbar ---- */
+.tabbar{
+  position:fixed;left:50%;translate:-50% 0;bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;
+  width:min(94%,430px);
+  background:color-mix(in srgb,var(--surface) 90%,transparent);backdrop-filter:blur(18px);
+  border:1px solid var(--trait);border-radius:24px;box-shadow:0 16px 38px -14px rgba(43,16,34,.32);
+  display:flex;padding:8px;gap:2px;
+}
+@media (min-width:980px){.tabbar{display:none}}
+.onglet{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-weight:700;font-size:.62rem;color:var(--encre3);padding:7px 2px;border-radius:16px;transition:all .18s ease}
+.onglet svg{width:21px;height:21px;transition:transform .2s cubic-bezier(.3,1.6,.4,1)}
+.onglet.on{color:var(--rose);background:var(--rose-doux)}
+.onglet.on svg{transform:translateY(-1px) scale(1.08)}
+.onglet:active svg{transform:scale(.85)}
+.fab{
+  position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(max(14px,env(safe-area-inset-bottom,0px)) + 86px);z-index:40;
+  width:56px;height:56px;border-radius:19px;background:var(--degr);color:#fff;
+  display:grid;place-content:center;box-shadow:0 14px 30px -8px color-mix(in srgb,var(--rose) 70%,transparent);
+  transition:transform .15s cubic-bezier(.3,1.5,.4,1);
+}
+.fab svg{width:24px;height:24px}
+.fab:hover{transform:rotate(90deg)}
+.fab:active{transform:scale(.9) rotate(90deg)}
+@media (min-width:980px){.fab{bottom:28px;right:28px}}
+
+/* ---- feuilles ---- */
+.voile{position:fixed;inset:0;z-index:70;background:rgba(22,8,16,.52);backdrop-filter:blur(4px);display:grid;place-items:end center}
+@media (min-width:720px){.voile{place-items:center}}
+.feuille{
+  width:100%;max-width:470px;background:var(--fond);
+  border:1px solid var(--trait);border-radius:26px 26px 0 0;
+  padding:10px 22px calc(24px + env(safe-area-inset-bottom,0px));
+  animation:monte .32s cubic-bezier(.2,1.1,.4,1) both;max-height:88vh;overflow-y:auto;
+}
+@media (min-width:720px){.feuille{border-radius:26px;padding-top:22px}}
+@keyframes monte{from{translate:0 60px;opacity:0}to{translate:0 0;opacity:1}}
+.tirette{width:40px;height:4px;border-radius:999px;background:var(--trait);margin:4px auto 16px}
+@media (min-width:720px){.tirette{display:none}}
+.feuille h3{font-weight:800;font-size:1.2rem;margin-bottom:16px;letter-spacing:-.01em}
+.champ{margin-bottom:13px}
+.champ label{font-weight:700;font-size:.81rem;display:block;margin-bottom:6px;color:var(--encre2)}
+.champ input,.champ textarea{width:100%;background:var(--surface);border:1.5px solid var(--trait);border-radius:14px;padding:13px 15px;font-weight:600}
+.champ input:focus,.champ textarea:focus{border-color:var(--rose);outline:none}
+.champ textarea{resize:none;min-height:82px;font-family:"Instrument Serif",Georgia,serif;font-weight:400;font-size:1.12rem}
+.ligne-btn{display:flex;gap:10px;margin-top:8px}
+.ligne-btn .btn-p{width:auto;flex:1}
+.comms .c{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--trait)}
+.comms .c:last-child{border-bottom:none}
+.comms b{font-weight:700;font-size:.87rem;display:block}
+.comms p{font-weight:500;font-size:.92rem;color:var(--encre2)}
+.compose{display:flex;gap:10px;margin-top:12px}
+.compose input{flex:1;background:var(--surface);border:1.5px solid var(--trait);border-radius:999px;padding:11px 16px;font-weight:600}
+.compose button{flex:none;width:44px;height:44px;border-radius:50%;background:var(--rose);color:#fff;display:grid;place-content:center;transition:transform .14s ease}
+.compose button:active{transform:scale(.88)}
+.compose button svg{width:19px;height:19px}
+
+/* ---- toast + confetti ---- */
+.toast{
+  position:fixed;left:50%;translate:-50% 20px;bottom:calc(max(14px,env(safe-area-inset-bottom,0px)) + 94px);z-index:80;
+  width:min(92%,400px);display:flex;align-items:center;gap:10px;
+  background:var(--encre);color:var(--fond);border-radius:16px;
+  font-weight:700;font-size:.89rem;padding:13px 17px;box-shadow:0 16px 36px -12px rgba(0,0,0,.4);
+  opacity:0;pointer-events:none;
+  transition:translate .3s cubic-bezier(.2,1.2,.4,1), opacity .3s ease;
+}
+.toast svg{width:18px;height:18px;flex:none;color:var(--menthe)}
+.toast.on{translate:-50% 0;opacity:1}
+.conf{position:fixed;width:9px;height:9px;z-index:90;pointer-events:none;border-radius:2px}
+
+@media (prefers-reduced-motion: reduce){
+  .ecran>*,.feuille,.rang.neuf{animation:none}
+  .badge .med::after,.sem-pts .auj i{animation:none}
+  .prog i,.cl-l .rail i,.gb i,.coche,.coche svg path,.jalon,.toast,.toggle::after{transition:none}
+  .btn-p,.btn-join,.reac,.onglet,.onglet svg,.chip,.fab,.serie,.kpi,.nav-i{transition:none}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" aria-hidden="true"><defs>
+  <linearGradient id="degL" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#8E7BFF"/><stop offset="1" stop-color="#F0447D"/>
+  </linearGradient>
+</defs></svg>
+
+<div class="shell">
+
+  <!-- ===== Sidebar desktop ===== -->
+  <aside class="side">
+    <div class="marque">
+      <span class="rond"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 20.4s-6.8-4.3-9.1-8.5C1.4 9 3.1 5.8 6.3 5.8c1.8 0 3.1 1 3.8 2.2h3.8c.7-1.2 2-2.2 3.8-2.2 3.2 0 4.9 3.2 3.4 6.1-2.3 4.2-9.1 8.5-9.1 8.5z"/></svg></span>
+      <div><b>Au fil des km</b><small>LE CLUB · DÉMO</small></div>
+    </div>
+    <button class="nav-i on" data-e="accueil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.8L12 3.5l8.5 7.3V20a1 1 0 0 1-1 1h-5v-6h-5v6h-5a1 1 0 0 1-1-1z"/></svg>Aujourd'hui</button>
+    <button class="nav-i" data-e="defi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4.5m0 0C7 3 9 3 11 4s4 1 6 0v8c-2 1-4 1-6 0s-4-1-6 0"/></svg>Le défi</button>
+    <button class="nav-i" data-e="carnet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.5A2.5 2.5 0 0 1 7 3h12.5v15.5H7a2.5 2.5 0 0 0-2.5 2.5z"/><path d="M4.5 18.5v-13M9 8h6.5M9 11.5h4"/></svg>Le carnet</button>
+    <button class="nav-i" data-e="sorties"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.5s7-5.6 7-11.3A7 7 0 1 0 5 10.2c0 5.7 7 11.3 7 11.3z"/><circle cx="12" cy="10" r="2.5"/></svg>Les sorties</button>
+    <button class="nav-i" data-e="studio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c.8 3.6 1.9 4.7 5.5 5.5-3.6.8-4.7 1.9-5.5 5.5-.8-3.6-1.9-4.7-5.5-5.5 3.6-.8 4.7-1.9 5.5-5.5z"/><path d="M18.5 14c.4 1.8 1 2.3 2.8 2.8-1.8.4-2.4 1-2.8 2.8-.4-1.8-1-2.4-2.8-2.8 1.8-.5 2.4-1 2.8-2.8z"/></svg>Studio</button>
+    <div class="fin">
+      <span class="av" style="background:#F0447D">OA</span>
+      <div><b>Océane</b><small>Créatrice du club</small></div>
+    </div>
+  </aside>
+
+  <!-- ===== Corps ===== -->
+  <div class="corps">
+    <div class="haut">
+      <span class="av l" style="background:#F0447D">OA</span>
+      <div class="qui"><b>Bonjour Océane</b><small>Lundi 16 novembre · New York</small></div>
+      <button class="serie" id="serie"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 1.5s1 2.5-.5 4.5S9.5 9 10 12c-1.5-1-2.3-2.5-2.5-4C5.6 9.6 4.5 12 4.5 14.5A7.5 7.5 0 0 0 12 22a7.5 7.5 0 0 0 7.5-7.5c0-5-4-7.5-6-13z"/></svg>5 jours</button>
+    </div>
+    <div class="bando">DÉMO INTERACTIVE · PROTOTYPE NON OFFICIEL — TOUT EST MODIFIABLE</div>
+
+    <!-- ========== AUJOURD'HUI ========== -->
+    <main class="ecran" id="ec-accueil">
+      <div class="titre-e"><h2>Aujourd'hui</h2>
+        <span class="etiq ambre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M18.7 5.3L17 7M7 17l-1.7 1.7"/></svg>4 °C · dégagé à 7 h</span>
+      </div>
+      <div class="sous-e">Semaine 7 sur 16 de ta préparation marathon. Tout roule.</div>
+
+      <div class="carte">
+        <div class="seance">
+          <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17.5l4.2-8.3 3.6 5.6 2.7-3.7 5.5 6.4"/></svg></span>
+          <div>
+            <b>Footing doux · 6 km</b>
+            <small>Allure 6:15–6:30 /km · plutôt avant 9 h, il fera beau</small>
+          </div>
+          <button class="coche" id="coche-jour" aria-label="Marquer la séance comme faite"><svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></button>
+        </div>
+        <div class="sem-pts">
+          <span class="fait"><i></i>L</span><span class="fait"><i></i>M</span><span><i></i>M</span>
+          <span class="auj"><i></i>J</span><span><i></i>V</span><span><i></i>S</span><span class="fait" style="opacity:.5"><i></i>D</span>
+        </div>
+      </div>
+
+      <div class="carte">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <h3>Défi de novembre</h3><span class="etiq rose">J-14</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:9px">
+          <b class="num chif" id="tot-a" style="font-size:2.5rem">67 412</b>
+          <span style="font-weight:600;color:var(--encre2)">/ 100 000 km</span>
+        </div>
+        <div class="prog-z">
+          <div class="prog"><i class="jg"></i></div>
+          <span class="jalon" data-j="25" style="left:25%"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.6 6.3 6.9.5-5.3 4.4 1.7 6.7L12 16.7l-5.9 3.7 1.7-6.7-5.3-4.4 6.9-.5z"/></svg></span>
+          <span class="jalon" data-j="50" style="left:50%"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.6 6.3 6.9.5-5.3 4.4 1.7 6.7L12 16.7l-5.9 3.7 1.7-6.7-5.3-4.4 6.9-.5z"/></svg></span>
+          <span class="jalon" data-j="75" style="left:75%"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.6 6.3 6.9.5-5.3 4.4 1.7 6.7L12 16.7l-5.9 3.7 1.7-6.7-5.3-4.4 6.9-.5z"/></svg></span>
+          <span class="jalon" data-j="100" style="left:calc(100% - 12px)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 21V4.5m0 0C8 3.3 9.8 3.3 11.5 4.2s3.6.9 5.5 0v7.6c-1.9.9-3.8.9-5.5 0s-3.5-.9-5.5.2"/></svg></span>
+        </div>
+        <div class="ligne-s">
+          <div><b class="num">+1 284</b><span>km aujourd'hui</span></div>
+          <div><b class="num">42,6</b><span>tes km du mois</span></div>
+          <div><b class="num">612</b><span>coureuses actives</span></div>
+        </div>
+      </div>
+
+      <div class="carte">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <h3>Dernières pages du club</h3><button class="act" data-va="carnet" style="font-weight:700;font-size:.85rem;color:var(--rose)">Tout voir</button>
+        </div>
+        <div class="rangs" id="feed-mini"></div>
+      </div>
+    </main>
+
+    <!-- ========== DÉFI ========== -->
+    <main class="ecran" id="ec-defi" hidden>
+      <div class="titre-e"><h2>Le défi de novembre</h2></div>
+      <div class="sous-e">100 000 km toutes ensemble avant le 30. Tes 3 km comptent autant qu'un marathon.</div>
+
+      <div class="carte">
+        <div style="display:flex;align-items:baseline;gap:9px">
+          <b class="num chif" id="tot-d" style="font-size:2.9rem">67 412</b>
+          <span style="font-weight:600;color:var(--encre2)">/ 100 000 km · <span class="num" id="pct-d">67</span> %</span>
+        </div>
+        <div class="prog-z">
+          <div class="prog"><i class="jg"></i></div>
+          <span class="jalon" data-j="25" style="left:25%"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.6 6.3 6.9.5-5.3 4.4 1.7 6.7L12 16.7l-5.9 3.7 1.7-6.7-5.3-4.4 6.9-.5z"/></svg></span>
+          <span class="jalon" data-j="50" style="left:50%"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.6 6.3 6.9.5-5.3 4.4 1.7 6.7L12 16.7l-5.9 3.7 1.7-6.7-5.3-4.4 6.9-.5z"/></svg></span>
+          <span class="jalon" data-j="75" style="left:75%"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5l2.6 6.3 6.9.5-5.3 4.4 1.7 6.7L12 16.7l-5.9 3.7 1.7-6.7-5.3-4.4 6.9-.5z"/></svg></span>
+          <span class="jalon" data-j="100" style="left:calc(100% - 12px)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 21V4.5m0 0C8 3.3 9.8 3.3 11.5 4.2s3.6.9 5.5 0v7.6c-1.9.9-3.8.9-5.5 0s-3.5-.9-5.5.2"/></svg></span>
+          <div class="prog-leg"><span>25k</span><span>50k</span><span>75k</span><span>arrivée</span></div>
+        </div>
+        <div class="ligne-s">
+          <div><b class="num" id="reste-d">32 588</b><span>km restants</span></div>
+          <div><b class="num">14</b><span>jours restants</span></div>
+          <div><b class="num">2 328</b><span>km/jour à tenir</span></div>
+        </div>
+      </div>
+
+      <div class="carte" style="display:flex;align-items:center;gap:13px">
+        <span class="av l" style="background:#F0447D">OA</span>
+        <div style="flex:1">
+          <b style="font-weight:800">Ton rang : 47ᵉ sur 2 184</b>
+          <div style="font-weight:600;font-size:.84rem;color:var(--encre2)">Top 3 % du club · 42,6 km ce mois-ci</div>
+        </div>
+        <span class="etiq lilas">+9 places</span>
+      </div>
+
+      <div class="carte">
+        <h3 style="margin-bottom:12px">Tes médailles du club</h3>
+        <div class="badges">
+          <div class="badge"><span class="med" style="background:#F0447D"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V4.5m0 0C8 3.3 9.8 3.3 11.5 4.2s3.6.9 5.5 0v7.6c-1.9.9-3.8.9-5.5 0s-3.5-.9-5.5.2"/></svg></span><b>Marathon de NY</b><small>nov. 2025</small></div>
+          <div class="badge"><span class="med" style="background:#8E7BFF"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 1.5s1 2.5-.5 4.5S9.5 9 10 12c-1.5-1-2.3-2.5-2.5-4C5.6 9.6 4.5 12 4.5 14.5A7.5 7.5 0 0 0 12 22a7.5 7.5 0 0 0 7.5-7.5c0-5-4-7.5-6-13z"/></svg></span><b>30 jours de suite</b><small>record : 31</small></div>
+          <div class="badge"><span class="med" style="background:#2FBD97"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.5A2.5 2.5 0 0 1 7 3h12.5v15.5H7a2.5 2.5 0 0 0-2.5 2.5z"/><path d="M9 8h6.5M9 11.5h4"/></svg></span><b>100 pages écrites</b><small>une plume</small></div>
+          <div class="badge"><span class="med" style="background:#F5A623"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.5s7-5.6 7-11.3A7 7 0 1 0 5 10.2c0 5.7 7 11.3 7 11.3z"/><circle cx="12" cy="10" r="2.5"/></svg></span><b>5 villes courues</b><small>globe-trotteuse</small></div>
+          <div class="badge verrou"><span class="med"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg></span><b>Sub 1h50 au semi</b><small>bientôt…</small></div>
+        </div>
+      </div>
+
+      <div class="g2">
+        <div class="carte">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <h3>Elles viennent de courir</h3><span class="etiq menthe" style="gap:6px"><i style="width:7px;height:7px;border-radius:50%;background:var(--menthe);display:inline-block"></i>en direct</span>
+          </div>
+          <div class="rangs" id="contribs"></div>
+        </div>
+        <div class="carte">
+          <h3>Classement des villes</h3>
+          <div class="cl-v">
+            <div class="cl-l"><span class="pos">1</span>Paris<span class="rail"><i data-w="100"></i></span><span class="v num">9 418<small>km</small></span></div>
+            <div class="cl-l"><span class="pos">2</span>New York<span class="rail"><i data-w="74"></i></span><span class="v num">6 972<small>km</small></span></div>
+            <div class="cl-l"><span class="pos">3</span>Lyon<span class="rail"><i data-w="62"></i></span><span class="v num">5 840<small>km</small></span></div>
+            <div class="cl-l"><span class="pos">4</span>Bordeaux<span class="rail"><i data-w="41"></i></span><span class="v num">3 861<small>km</small></span></div>
+            <div class="cl-l"><span class="pos">5</span>Lille<span class="rail"><i data-w="33"></i></span><span class="v num">3 108<small>km</small></span></div>
+          </div>
+          <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--trait);display:flex;align-items:center;gap:8px">
+            <span class="etiq menthe">Octobre réussi</span>
+            <small style="font-weight:600;color:var(--encre3)">80 000 km atteints à 104 %</small>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- ========== CARNET ========== -->
+    <main class="ecran" id="ec-carnet" hidden>
+      <div class="titre-e"><h2>Le carnet</h2><button class="act" id="btn-ecrire">Écrire une page</button></div>
+      <div class="sous-e">Chaque course devient une page. Pas un chrono : un souvenir.</div>
+      <div class="filtre">
+        <button class="on" data-f="club">Le club</button>
+        <button data-f="moi">Mes pages</button>
+      </div>
+      <div id="feed"></div>
+    </main>
+
+    <!-- ========== SORTIES ========== -->
+    <main class="ecran" id="ec-sorties" hidden>
+      <div class="titre-e"><h2>Les sorties</h2></div>
+      <div class="sous-e">On court seules, mais jamais toutes seules.</div>
+      <div class="carte prochaine">
+        <div class="cd"><b>J-6</b><span>SAM. 22</span></div>
+        <div class="inf" style="position:relative;z-index:1">
+          <b>Ta prochaine sortie : longue + brunch</b>
+          <small>Prospect Park, New York · 12 km tranquilles · 22 inscrites</small>
+        </div>
+      </div>
+      <div class="chips" id="chips">
+        <button class="chip on" data-v="ny">New York</button>
+        <button class="chip" data-v="paris">Paris</button>
+        <button class="chip" data-v="lyon">Lyon</button>
+        <button class="chip" data-v="bordeaux">Bordeaux</button>
+      </div>
+      <div id="sorties"></div>
+      <button class="btn-p fantome" id="btn-proposer">Proposer une sortie dans ma ville</button>
+    </main>
+
+    <!-- ========== STUDIO ========== -->
+    <main class="ecran" id="ec-studio" hidden>
+      <div class="titre-e"><h2>Studio</h2><span class="etiq lilas">Vue créatrice</span></div>
+      <div class="sous-e">La vue que toi seule as : ton club, tes chiffres, tes lancements.</div>
+
+      <div class="kpis">
+        <div class="kpi"><b class="num kc" data-v="2184">0</b><span>membres</span><div class="delta"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5l7 8h-4v6h-6v-6H5z"/></svg>+312 ce mois</div></div>
+        <div class="kpi"><b class="num kc" data-v="612">0</b><span>actives / semaine</span><div class="delta"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5l7 8h-4v6h-6v-6H5z"/></svg>+28 %</div></div>
+        <div class="kpi"><b class="num kc" data-v="9530">0</b><span>pages écrites</span><div class="delta"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5l7 8h-4v6h-6v-6H5z"/></svg>+1 107</div></div>
+        <div class="kpi"><b class="num kc" data-v="73">0</b><span>villes</span><div class="delta"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 5l7 8h-4v6h-6v-6H5z"/></svg>+6</div></div>
+      </div>
+
+      <div class="carte">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3>Kilomètres du club · 7 derniers jours</h3><span class="etiq rose num">12 418 km</span>
+        </div>
+        <div class="graphe">
+          <div class="gb"><b class="num">1 520</b><i data-h="62"></i>Lun</div>
+          <div class="gb"><b class="num">1 804</b><i data-h="76"></i>Mar</div>
+          <div class="gb"><b class="num">1 186</b><i data-h="50"></i>Mer</div>
+          <div class="gb"><b class="num">2 011</b><i data-h="84"></i>Jeu</div>
+          <div class="gb"><b class="num">1 577</b><i data-h="66"></i>Ven</div>
+          <div class="gb"><b class="num">2 088</b><i data-h="90"></i>Sam</div>
+          <div class="gb"><b class="num">2 232</b><i data-h="98"></i>Dim</div>
+        </div>
+      </div>
+
+      <div class="g2">
+        <div class="carte simu">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+            <h3>Simulateur · Training Club</h3><span class="etiq menthe">prêt à lancer</span>
+          </div>
+          <div class="gros num"><span id="simu-rev">1 719</span> € <small>/ mois estimés</small></div>
+          <div style="font-weight:600;font-size:.82rem;color:var(--encre3);margin-top:2px">Plans d'entraînement signés Océane, en abonnement</div>
+          <div class="curseur">
+            <label>Prix de l'abonnement <b class="num"><span id="simu-prix">8,90</span> € / mois</b></label>
+            <input type="range" id="r-prix" min="4.9" max="19.9" step="1" value="8.9">
+          </div>
+          <div class="curseur">
+            <label>Membres abonnées <b class="num"><span id="simu-pct">9</span> % du club</b></label>
+            <input type="range" id="r-pct" min="2" max="30" step="1" value="9">
+          </div>
+        </div>
+        <div class="carte">
+          <h3 style="margin-bottom:10px">Connexions &amp; lancements</h3>
+          <div class="rangs">
+            <div class="rang"><div class="inf"><b>Strava</b><small>Les courses remplissent le défi toutes seules</small></div><button class="toggle on" aria-label="Synchronisation Strava activée"></button></div>
+            <div class="rang"><div class="inf"><b>Apple Santé / Garmin</b><small>Montres connectées</small></div><button class="toggle" aria-label="Activer les montres connectées"></button></div>
+            <div class="rang"><div class="inf"><b>Boutique du club</b><small>Le bonnet du dimanche matin</small></div><button class="toggle" aria-label="Activer la boutique"></button></div>
+          </div>
+          <button class="btn-p rose" id="btn-dec" style="margin-top:16px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>Préparer le défi de décembre</button>
+        </div>
+      </div>
+
+      <div class="carte">
+        <h3 style="margin-bottom:6px">Tes ambassadrices du mois</h3>
+        <div class="rangs">
+          <div class="rang"><span class="av" style="background:#2FBD97">MT</span><div class="inf"><b>Marion T. · Lyon</b><small>34 nouvelles membres via son lien</small></div><span class="val num">+34</span></div>
+          <div class="rang"><span class="av" style="background:#8E7BFF">IB</span><div class="inf"><b>Inès B. · Paris</b><small>28 nouvelles membres, 2 sorties créées</small></div><span class="val num">+28</span></div>
+          <div class="rang"><span class="av" style="background:#F5A623">CR</span><div class="inf"><b>Chloé R. · Bordeaux</b><small>21 nouvelles membres</small></div><span class="val num">+21</span></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- tabbar -->
+    <nav class="tabbar" aria-label="Navigation">
+      <button class="onglet on" data-e="accueil"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.8L12 3.5l8.5 7.3V20a1 1 0 0 1-1 1h-5v-6h-5v6h-5a1 1 0 0 1-1-1z"/></svg>Aujourd'hui</button>
+      <button class="onglet" data-e="defi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4.5m0 0C7 3 9 3 11 4s4 1 6 0v8c-2 1-4 1-6 0s-4-1-6 0"/></svg>Défi</button>
+      <button class="onglet" data-e="carnet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 5.5A2.5 2.5 0 0 1 7 3h12.5v15.5H7a2.5 2.5 0 0 0-2.5 2.5z"/><path d="M4.5 18.5v-13M9 8h6.5M9 11.5h4"/></svg>Carnet</button>
+      <button class="onglet" data-e="sorties"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.5s7-5.6 7-11.3A7 7 0 1 0 5 10.2c0 5.7 7 11.3 7 11.3z"/><circle cx="12" cy="10" r="2.5"/></svg>Sorties</button>
+      <button class="onglet" data-e="studio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5c.8 3.6 1.9 4.7 5.5 5.5-3.6.8-4.7 1.9-5.5 5.5-.8-3.6-1.9-4.7-5.5-5.5 3.6-.8 4.7-1.9 5.5-5.5z"/><path d="M18.5 14c.4 1.8 1 2.3 2.8 2.8-1.8.4-2.4 1-2.8 2.8-.4-1.8-1-2.4-2.8-2.8 1.8-.5 2.4-1 2.8-2.8z"/></svg>Studio</button>
+    </nav>
+    <button class="fab" id="fab" aria-label="Ajouter une course"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+  </div>
+</div>
+
+<!-- ===== Feuille : ajouter une course ===== -->
+<div class="voile" id="v-course" hidden>
+  <form class="feuille" id="form-course">
+    <div class="tirette"></div>
+    <h3>Ajouter une course</h3>
+    <div class="deux">
+      <div class="champ"><label for="f-km">Distance (km)</label><input id="f-km" type="text" inputmode="decimal" value="6,2" required></div>
+      <div class="champ"><label for="f-tps">Temps (min)</label><input id="f-tps" type="text" inputmode="numeric" value="39"></div>
+    </div>
+    <div class="champ"><label for="f-ou">Où ça ?</label><input id="f-ou" type="text" value="Central Park, boucle sud"></div>
+    <div class="champ"><label for="f-mot">Ta phrase du jour</label><textarea id="f-mot">Froid de canard, mais le soleil sur les buildings valait chaque foulée.</textarea></div>
+    <div class="ligne-btn">
+      <button type="button" class="btn-p fantome" id="btn-annule">Annuler</button>
+      <button type="submit" class="btn-p rose">Enregistrer la course</button>
+    </div>
+  </form>
+</div>
+
+<!-- ===== Feuille : commentaires ===== -->
+<div class="voile" id="v-comms" hidden>
+  <div class="feuille">
+    <div class="tirette"></div>
+    <h3 id="c-titre">Commentaires</h3>
+    <div class="comms" id="c-liste"></div>
+    <div class="compose">
+      <input id="c-input" type="text" placeholder="Laisse un petit mot…">
+      <button id="c-envoi" aria-label="Envoyer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Feuille : défi décembre ===== -->
+<div class="voile" id="v-dec" hidden>
+  <form class="feuille" id="form-dec">
+    <div class="tirette"></div>
+    <h3>Défi de décembre</h3>
+    <div class="champ"><label for="d-nom">Nom du défi</label><input id="d-nom" type="text" value="Le calendrier de l'avent des km"></div>
+    <div class="deux">
+      <div class="champ"><label for="d-obj">Objectif (km)</label><input id="d-obj" type="text" inputmode="numeric" value="120 000"></div>
+      <div class="champ"><label for="d-date">Lancement</label><input id="d-date" type="text" value="1er décembre"></div>
+    </div>
+    <div class="ligne-btn">
+      <button type="button" class="btn-p fantome" id="btn-dec-annule">Plus tard</button>
+      <button type="submit" class="btn-p rose">Programmer le défi</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast" role="status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg><span id="toast-txt"></span></div>
+
+<script>
+(function(){
+  var reduit=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var PAL={rose:'#F0447D',lilas:'#8E7BFF',menthe:'#2FBD97',ambre:'#F5A623',prune:'#B3457A',bleu:'#5C8DF6'};
+
+  /* ================= données ================= */
+  var etat={
+    total:67412, seanceOk:false, serie:5,
+    pages:[
+      {id:1,qui:'Océane',ini:'OA',c:'rose',moi:true,route:'parc',km:'7,2',tps:'44:38',allure:'6:12',ou:'Central Park · New York',quand:'Hier, 6 h 58',page:47,
+       meteo:'Pluie fine · 9 °C',effort:2,
+       mot:'Il pleuvait. J’y suis allée quand même, et c’est exactement pour ça que je cours.',aime:214,aimeMoi:false,
+       pts:'4,66 10,30 16,22 24,40 32,28 40,52 48,38 56,60 64,44 72,66 80,50 88,58 96,42',
+       comms:[{qui:'Léa M.',txt:'La pluie à Central Park >>> tout 🥹'},{qui:'Camille',txt:'Tu m’as motivée pour demain matin, merci'}]},
+      {id:2,qui:'Inès B.',ini:'IB',c:'lilas',moi:false,route:'canal',km:'10,0',tps:'58:12',allure:'5:49',ou:'Canal Saint-Martin · Paris',quand:'Hier, 19 h 24',
+       meteo:'Nuit claire · 6 °C',effort:3,
+       mot:'Première sortie de nuit de l’hiver. Les guirlandes sont déjà là, je cours dans un décor de film.',aime:96,aimeMoi:true,
+       pts:'4,50 14,36 22,54 30,30 38,46 46,24 54,44 62,30 70,56 78,40 86,62 96,48',
+       comms:[{qui:'Océane',txt:'Paris by night 😍'}]},
+      {id:3,qui:'Marion T.',ini:'MT',c:'menthe',moi:false,route:'quais',km:'5,0',tps:'34:50',allure:'6:58',ou:'Quais de Saône · Lyon',quand:'Hier, 12 h 05',
+       meteo:'Grand soleil · 11 °C',effort:4,
+       mot:'Premier 5K sans marcher. J’ai pleuré un peu à la fin, personne n’a rien vu.',aime:187,aimeMoi:true,
+       pts:'4,60 12,44 20,58 30,36 40,54 50,30 60,48 70,34 80,52 90,40 96,46',
+       comms:[{qui:'Océane',txt:'MARION. Je suis tellement fière 💗'},{qui:'Jade',txt:'On a toutes pleuré avec toi je crois'},{qui:'Sofia',txt:'Bienvenue au club des 5K ✨'}]},
+      {id:4,qui:'Chloé R.',ini:'CR',c:'ambre',moi:false,route:'semi',km:'21,1',tps:'1:52:40',allure:'5:20',ou:'Semi de Bordeaux',quand:'Dimanche, 11 h 40',
+       meteo:'Couvert · 12 °C',effort:5,
+       mot:'Au 18ᵉ, je voulais abandonner. Au 21ᵉ, je cherchais déjà le prochain.',aime:243,aimeMoi:false,
+       pts:'4,40 10,56 18,32 26,50 34,26 42,48 50,30 58,54 66,36 74,58 82,42 90,60 96,38',
+       comms:[{qui:'Anaïs',txt:'1h52 ?! Machine.'},{qui:'Océane',txt:'La phrase de la semaine 🏆'}]}
+    ],
+    contribs:[
+      {qui:'Léa M.',ini:'LM',c:'bleu',ou:'Brooklyn',km:'8,4',t:'il y a 4 min'},
+      {qui:'Sofia G.',ini:'SG',c:'prune',ou:'Lyon 4ᵉ',km:'5,1',t:'il y a 11 min'},
+      {qui:'Jade',ini:'J',c:'menthe',ou:'Bordeaux',km:'12,0',t:'il y a 19 min'},
+      {qui:'Emma D.',ini:'ED',c:'lilas',ou:'Paris 10ᵉ',km:'6,6',t:'il y a 26 min'},
+      {qui:'Lucie',ini:'L',c:'ambre',ou:'Montréal',km:'7,0',t:'il y a 31 min'}
+    ],
+    sorties:{
+      ny:[{j:'18',m:'NOV',t:'Sunrise run · Central Park loop',ou:'Départ Columbus Circle · 6 km',org:'Océane',ini:'OA',c:'rose',n:14,ok:false,note:'allure papotage'},
+          {j:'20',m:'NOV',t:'Fractionné gentil · East River',ou:'Départ Pier 35 · 8 × 400 m',org:'Léa M.',ini:'LM',c:'bleu',n:9,ok:false,note:'tous niveaux'},
+          {j:'22',m:'NOV',t:'Sortie longue + brunch',ou:'Prospect Park · 12 km tranquilles',org:'Camille',ini:'C',c:'lilas',n:22,ok:true,note:'réservation faite'}],
+      paris:[{j:'19',m:'NOV',t:'After-work · Canal Saint-Martin',ou:'Départ République · 7 km',org:'Inès B.',ini:'IB',c:'lilas',n:17,ok:false,note:'allure papotage'},
+             {j:'23',m:'NOV',t:'Sortie longue douce',ou:'Bois de Vincennes · 14 km',org:'Emma D.',ini:'ED',c:'menthe',n:26,ok:false,note:'2 groupes d’allure'}],
+      lyon:[{j:'18',m:'NOV',t:'Fractionné doux · Tête d’Or',ou:'Entrée porte des Enfants · 6 × 500 m',org:'Sofia G.',ini:'SG',c:'prune',n:8,ok:false,note:'débutantes bienvenues'},
+            {j:'21',m:'NOV',t:'Montées de la Croix-Rousse + café',ou:'Départ place des Terreaux · 5 km',org:'Marion T.',ini:'MT',c:'menthe',n:15,ok:false,note:'ça pique, ça papote'},
+            {j:'22',m:'NOV',t:'Berges du Rhône au lever du jour',ou:'Départ pont Wilson · 8 km',org:'Clara',ini:'CL',c:'bleu',n:12,ok:false,note:'allure papotage'}],
+      bordeaux:[{j:'22',m:'NOV',t:'Les quais au complet',ou:'Miroir d’eau → Chartrons · 9 km',org:'Chloé R.',ini:'CR',c:'ambre',n:11,ok:false,note:'cannelés offerts'}]
+    },
+    ville:'ny'
+  };
+  try{var s=localStorage.getItem('afk-demo-v4');if(s){var j=JSON.parse(s);if(j&&j.pages)etat=j}}catch(e){}
+  function garde(){try{localStorage.setItem('afk-demo-v4',JSON.stringify(etat))}catch(e){}}
+
+  /* ================= utilitaires ================= */
+  function fmt(n){return Math.round(n).toLocaleString('fr-FR')}
+  var toastEl=document.getElementById('toast'),toastTxt=document.getElementById('toast-txt'),toastT=null;
+  function toast(m){toastTxt.textContent=m;toastEl.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('on')},2800)}
+  function confetti(x,y){
+    if(reduit)return;
+    var cols=[PAL.rose,PAL.lilas,PAL.menthe,PAL.ambre];
+    for(var i=0;i<26;i++){
+      var c=document.createElement('span');c.className='conf';
+      c.style.background=cols[i%4];c.style.left=x+'px';c.style.top=y+'px';
+      document.body.appendChild(c);
+      var a=-Math.PI/2+(Math.random()-.5)*1.6, v=90+Math.random()*150;
+      c.animate([
+        {transform:'translate(0,0) rotate(0)',opacity:1},
+        {transform:'translate('+Math.cos(a)*v+'px,'+(Math.sin(a)*v+170)+'px) rotate('+(Math.random()*540-270)+'deg)',opacity:0}
+      ],{duration:950+Math.random()*500,easing:'cubic-bezier(.2,.6,.4,1)'}).onfinish=function(){this.effect.target.remove()};
+    }
+  }
+  function coeurs(x,y){
+    if(reduit)return;
+    for(var i=0;i<6;i++){
+      var h=document.createElement('span');h.className='mini-coeur';
+      h.style.left=x+'px';h.style.top=y+'px';
+      h.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 20.4s-6.8-4.3-9.1-8.5C1.4 9 3.1 5.8 6.3 5.8c1.8 0 3.1 1 3.8 2.2h3.8c.7-1.2 2-2.2 3.8-2.2 3.2 0 4.9 3.2 3.4 6.1-2.3 4.2-9.1 8.5-9.1 8.5z"/></svg>';
+      document.body.appendChild(h);
+      h.animate([
+        {transform:'translate(0,0) scale(.5)',opacity:1},
+        {transform:'translate('+(Math.random()*60-30)+'px,-'+(55+Math.random()*45)+'px) scale('+(0.8+Math.random()*0.7)+')',opacity:0}
+      ],{duration:750+Math.random()*350,easing:'cubic-bezier(.2,.6,.4,1)'}).onfinish=function(){this.effect.target.remove()};
+    }
+  }
+  function av(ini,c,cls){return '<span class="av '+(cls||'')+'" style="background:'+(PAL[c]||PAL.rose)+'">'+ini+'</span>'}
+  function compte(el,cible,dur){
+    if(reduit){el.textContent=fmt(cible);return}
+    var t0=null;
+    function a(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/dur,1),e=1-Math.pow(1-p,3);
+      el.textContent=fmt(cible*e);if(p<1)requestAnimationFrame(a)}
+    requestAnimationFrame(a);
+  }
+  function peindreProg(scope){
+    var p=Math.min(etat.total/1000,100);
+    requestAnimationFrame(function(){
+      document.querySelectorAll(scope+' .prog .jg').forEach(function(b){b.style.width=p+'%'});
+      document.querySelectorAll(scope+' .jalon').forEach(function(j){j.classList.toggle('ok',p>=parseFloat(j.dataset.j))});
+    });
+  }
+
+  /* ================= navigation ================= */
+  var ecrans={accueil:'ec-accueil',defi:'ec-defi',carnet:'ec-carnet',sorties:'ec-sorties',studio:'ec-studio'};
+  function rejoue(id){
+    if(reduit)return;
+    var e=document.getElementById(id);
+    e.querySelectorAll(':scope > *').forEach(function(x){x.style.animation='none';void x.offsetWidth;x.style.animation=''});
+  }
+  function montre(e){
+    document.querySelectorAll('.onglet,.nav-i').forEach(function(x){x.classList.toggle('on',x.dataset.e===e)});
+    Object.keys(ecrans).forEach(function(k){document.getElementById(ecrans[k]).hidden=(k!==e)});
+    rejoue(ecrans[e]);
+    if(e==='accueil')peindreAccueil();
+    if(e==='defi')peindreDefi();
+    if(e==='carnet')peindreFeed();
+    if(e==='sorties')peindreSorties();
+    if(e==='studio')peindreStudio();
+    document.getElementById('fab').hidden=(e==='studio');
+  }
+  document.querySelectorAll('.onglet,.nav-i').forEach(function(o){o.addEventListener('click',function(){montre(o.dataset.e)})});
+  document.querySelectorAll('[data-va]').forEach(function(b){b.addEventListener('click',function(){montre(b.dataset.va)})});
+
+  /* ================= accueil ================= */
+  function peindreAccueil(){
+    compte(document.getElementById('tot-a'),etat.total,900);
+    peindreProg('#ec-accueil');
+    var fm=document.getElementById('feed-mini');fm.innerHTML='';
+    etat.pages.slice(0,3).forEach(function(p){
+      var d=document.createElement('div');d.className='rang';
+      d.innerHTML=av(p.ini,p.c)+'<div class="inf"><b>'+p.qui+' · '+p.km+' km</b><small>'+p.ou.split('·')[0].trim()+'</small></div><span class="val num">♥ '+p.aime+'</span>';
+      fm.appendChild(d);
+    });
+    document.getElementById('coche-jour').classList.toggle('ok',etat.seanceOk);
+  }
+  document.getElementById('coche-jour').addEventListener('click',function(){
+    etat.seanceOk=!etat.seanceOk;garde();
+    this.classList.toggle('ok',etat.seanceOk);
+    if(etat.seanceOk){var r=this.getBoundingClientRect();confetti(r.left+r.width/2,r.top);toast('Séance validée — semaine 7, c’est propre')}
+  });
+  document.getElementById('serie').addEventListener('click',function(){
+    toast('5 jours d’affilée — plus que 2 pour battre ton record d’octobre');
+  });
+
+  /* ================= défi ================= */
+  function peindreDefi(){
+    compte(document.getElementById('tot-d'),etat.total,900);
+    document.getElementById('pct-d').textContent=Math.round(etat.total/1000);
+    document.getElementById('reste-d').textContent=fmt(100000-etat.total);
+    peindreProg('#ec-defi');
+    requestAnimationFrame(function(){
+      document.querySelectorAll('#ec-defi .cl-l .rail i').forEach(function(b){b.style.width=b.dataset.w+'%'});
+    });
+    peindreContribs();
+  }
+  function peindreContribs(){
+    var c=document.getElementById('contribs');c.innerHTML='';
+    etat.contribs.slice(0,5).forEach(function(x,i){
+      var d=document.createElement('div');d.className='rang'+(x.neuf&&i===0?' neuf':'');
+      d.innerHTML=av(x.ini,x.c)+'<div class="inf"><b>'+x.qui+'</b><small>'+x.ou+' · '+x.t+'</small></div><span class="val num">+'+x.km+'<small>km</small></span>';
+      c.appendChild(d);
+    });
+  }
+  /* flux en direct : une nouvelle coureuse arrive régulièrement */
+  var vivier=[
+    {qui:'Camille P.',ini:'CP',c:'rose',ou:'Brooklyn',km:'4,8'},
+    {qui:'Anaïs',ini:'A',c:'lilas',ou:'Lille',km:'6,3'},
+    {qui:'Clara V.',ini:'CV',c:'bleu',ou:'Lyon 1ᵉʳ',km:'9,2'},
+    {qui:'Maëlle',ini:'M',c:'menthe',ou:'Annecy',km:'5,5'},
+    {qui:'Romane D.',ini:'RD',c:'prune',ou:'Paris 11ᵉ',km:'7,7'},
+    {qui:'Eva',ini:'E',c:'ambre',ou:'Montpellier',km:'10,4'}
+  ],vi=0;
+  if(!reduit){
+    setInterval(function(){
+      if(document.getElementById('ec-defi').hidden)return;
+      var n=vivier[vi++%vivier.length];
+      etat.total+=parseFloat(n.km.replace(',','.'));
+      etat.contribs.unshift({qui:n.qui,ini:n.ini,c:n.c,ou:n.ou,km:n.km,t:'à l’instant',neuf:true});
+      etat.contribs=etat.contribs.slice(0,6);
+      etat.contribs.forEach(function(x,i){if(i>0)delete x.neuf});
+      compte(document.getElementById('tot-d'),etat.total,500);
+      document.getElementById('reste-d').textContent=fmt(100000-etat.total);
+      peindreProg('#ec-defi');
+      peindreContribs();
+    },7000);
+  }
+
+  /* ================= carnet ================= */
+  var filtre='club';
+  /* Vrais tracés : boucle de parc, canal, berges, course point à point */
+  var ROUTES={
+    parc:{ d:'M44 66 C 34 58, 30 42, 38 32 C 46 22, 66 16, 92 15 C 114 14, 130 20, 134 32 C 138 44, 130 56, 114 63 C 98 70, 72 72, 56 70 C 50 69, 47 68, 44 66',
+           dep:[44,66], arr:[47,68], leg:'CENTRAL PARK · BOUCLE' },
+    canal:{ d:'M16 60 C 34 56, 44 48, 60 47 C 76 46, 82 54, 98 52 C 114 50, 122 40, 136 37 C 142 36, 147 35, 150 34',
+           dep:[16,60], arr:[150,34], leg:'LE LONG DU CANAL' },
+    quais:{ d:'M14 68 C 30 66, 40 58, 50 52 C 62 45, 60 36, 72 31 C 84 26, 96 30, 108 27 C 122 24, 132 18, 146 16',
+           dep:[14,68], arr:[146,16], leg:'LES QUAIS' },
+    semi:{ d:'M12 34 C 24 28, 36 30, 44 40 C 52 50, 60 58, 74 56 C 88 54, 90 42, 98 34 C 106 26, 120 24, 130 32 C 138 38, 144 48, 150 56',
+           dep:[12,34], arr:[150,56], leg:'PARCOURS OFFICIEL' }
+  };
+  function trace(cle){
+    var r=ROUTES[cle]||ROUTES.parc;
+    return '<svg class="trace" viewBox="0 0 164 90" preserveAspectRatio="xMidYMid meet" aria-hidden="true">'+
+      '<path class="ombre-t" d="'+r.d+'"/>'+
+      '<path class="vif" d="'+r.d+'" pathLength="100" style="stroke-dasharray:100;stroke-dashoffset:'+(reduit?0:100)+'"/>'+
+      '<circle class="dep" cx="'+r.dep[0]+'" cy="'+r.dep[1]+'" r="3.4"/>'+
+      '<circle class="arr" cx="'+r.arr[0]+'" cy="'+r.arr[1]+'" r="3.8"/>'+
+      '<text x="12" y="84">'+r.leg+'</text></svg>';
+  }
+  function effort(n){
+    var h='';for(var i=1;i<=5;i++)h+='<i'+(i<=n?' class="on"':'')+'></i>';
+    return '<span class="eff">effort'+h+'</span>';
+  }
+  function peindreFeed(){
+    var box=document.getElementById('feed');box.innerHTML='';
+    etat.pages.filter(function(p){return filtre==='club'||p.moi}).forEach(function(p){
+      var el=document.createElement('article');el.className='carte entree';
+      el.innerHTML=
+        (p.moi&&p.page?'<span class="no-page">page n° '+p.page+'</span>':'')+
+        '<div class="qui-l">'+av(p.ini,p.c)+'<div><b>'+p.qui+(p.moi?' <span class="etiq rose" style="margin-left:4px">toi</span>':'')+'</b><small>'+p.quand+' · '+p.ou+'</small></div></div>'+
+        trace(p.route)+
+        '<div class="cond"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M7 15.5a4.5 4.5 0 1 1 .8-8.9 5.5 5.5 0 0 1 10.6 1.6A3.9 3.9 0 0 1 17.5 15z"/></svg>'+p.meteo+'</span>'+effort(p.effort)+'</div>'+
+        '<div class="citation serif">« '+p.mot+' »</div>'+
+        '<div class="mesures"><div><b class="num">'+p.km+'</b><span>KM</span></div><div><b class="num">'+p.tps+'</b><span>TEMPS</span></div><div><b class="num">'+p.allure+'</b><span>MIN / KM</span></div></div>'+
+        '<div class="reactions">'+
+          '<button class="reac aime'+(p.aimeMoi?' on':'')+'"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 20.4s-6.8-4.3-9.1-8.5C1.4 9 3.1 5.8 6.3 5.8c1.8 0 3.1 1 3.8 2.2h3.8c.7-1.2 2-2.2 3.8-2.2 3.2 0 4.9 3.2 3.4 6.1-2.3 4.2-9.1 8.5-9.1 8.5z"/></svg><span class="num">'+p.aime+'</span></button>'+
+          '<button class="reac comm"><svg class="plume" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.6 0-3.1-.4-4.4-1.2L3 20l1.2-5.1A8.5 8.5 0 1 1 21 11.5z"/></svg><span class="num">'+p.comms.length+'</span></button>'+
+        '</div>';
+      el.querySelector('.aime').addEventListener('click',function(ev){
+        p.aimeMoi=!p.aimeMoi;p.aime+=p.aimeMoi?1:-1;garde();
+        this.classList.toggle('on',p.aimeMoi);this.querySelector('span').textContent=p.aime;
+        if(p.aimeMoi){var r=this.getBoundingClientRect();coeurs(r.left+r.width/2,r.top)}
+      });
+      el.querySelector('.comm').addEventListener('click',function(){ouvreComms(p)});
+      box.appendChild(el);
+      var pl=el.querySelector('.vif');
+      if(!reduit){requestAnimationFrame(function(){pl.animate([{strokeDashoffset:100},{strokeDashoffset:0}],{duration:1500,easing:'cubic-bezier(.4,.05,.3,1)',fill:'forwards'})})}
+    });
+  }
+  document.querySelectorAll('.filtre button').forEach(function(b){
+    b.addEventListener('click',function(){
+      filtre=b.dataset.f;
+      document.querySelectorAll('.filtre button').forEach(function(x){x.classList.toggle('on',x===b)});
+      peindreFeed();
+    });
+  });
+
+  /* commentaires */
+  var pageActive=null;
+  function ouvreComms(p){
+    pageActive=p;
+    document.getElementById('c-titre').textContent='Page de '+p.qui;
+    var l=document.getElementById('c-liste');l.innerHTML='';
+    p.comms.forEach(function(c){
+      var ini=c.qui.split(' ').map(function(w){return w[0]}).join('').slice(0,2).toUpperCase();
+      var d=document.createElement('div');d.className='c';
+      d.innerHTML=av(ini,c.qui==='Océane'?'rose':'lilas','s')+'<div><b>'+c.qui+'</b><p>'+c.txt+'</p></div>';
+      l.appendChild(d);
+    });
+    document.getElementById('v-comms').hidden=false;
+    document.getElementById('c-input').value='';
+  }
+  document.getElementById('c-envoi').addEventListener('click',function(){
+    var t=document.getElementById('c-input').value.trim();
+    if(!t||!pageActive)return;
+    pageActive.comms.push({qui:'Océane',txt:t});garde();
+    ouvreComms(pageActive);peindreFeed();
+  });
+  document.getElementById('c-input').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();document.getElementById('c-envoi').click()}});
+
+  /* ================= sorties ================= */
+  function peindreSorties(){
+    document.querySelectorAll('.chip').forEach(function(x){x.classList.toggle('on',x.dataset.v===etat.ville)});
+    var box=document.getElementById('sorties');box.innerHTML='';
+    etat.sorties[etat.ville].forEach(function(s){
+      var el=document.createElement('div');el.className='carte sortie';
+      el.innerHTML='<div class="quand"><span>'+s.m+'</span><b>'+s.j+'</b></div>'+
+        '<div class="det"><b>'+s.t+'</b><div class="ou">'+s.ou+'</div>'+
+        '<div class="meta"><div class="pile">'+av(s.ini,s.c,'s')+av('LM','bleu','s')+av('J','menthe','s')+'<span class="av s plus">+'+Math.max(s.n-3,0)+'</span></div><small>'+s.n+' inscrites · par '+s.org+' · '+s.note+'</small></div></div>'+
+        '<button class="btn-join'+(s.ok?' ok':'')+'">'+(s.ok?'Inscrite ✓':'J’y vais')+'</button>';
+      el.querySelector('.btn-join').addEventListener('click',function(){
+        s.ok=!s.ok;s.n+=s.ok?1:-1;garde();
+        peindreSorties();
+        if(s.ok){toast('Inscrite à « '+s.t+' » — '+s.org+' est prévenue')}
+      });
+      box.appendChild(el);
+    });
+  }
+  document.getElementById('chips').addEventListener('click',function(e){
+    var c=e.target.closest('.chip');if(!c)return;
+    etat.ville=c.dataset.v;garde();peindreSorties();
+  });
+  document.getElementById('btn-proposer').addEventListener('click',function(){
+    toast('Dans la vraie app : tu crées ta sortie en 20 secondes');
+  });
+
+  /* ================= studio ================= */
+  var studioFait=false;
+  function peindreStudio(){
+    requestAnimationFrame(function(){
+      document.querySelectorAll('.gb i').forEach(function(b){b.style.height=b.dataset.h+'px'});
+    });
+    document.querySelectorAll('.kc').forEach(function(k){compte(k,parseFloat(k.dataset.v),800)});
+    simu();
+  }
+  function simu(){
+    var prix=parseFloat(document.getElementById('r-prix').value);
+    var pct=parseFloat(document.getElementById('r-pct').value);
+    document.getElementById('simu-prix').textContent=prix.toFixed(2).replace('.',',');
+    document.getElementById('simu-pct').textContent=pct;
+    document.getElementById('simu-rev').textContent=fmt(2184*pct/100*prix);
+  }
+  document.getElementById('r-prix').addEventListener('input',simu);
+  document.getElementById('r-pct').addEventListener('input',simu);
+  document.querySelectorAll('.toggle').forEach(function(t){
+    t.addEventListener('click',function(){this.classList.toggle('on');
+      toast(this.classList.contains('on')?'Connexion activée':'Connexion désactivée')});
+  });
+  document.getElementById('btn-dec').addEventListener('click',function(){document.getElementById('v-dec').hidden=false});
+  document.getElementById('btn-dec-annule').addEventListener('click',function(){document.getElementById('v-dec').hidden=true});
+  document.getElementById('form-dec').addEventListener('submit',function(e){
+    e.preventDefault();document.getElementById('v-dec').hidden=true;
+    var r=document.getElementById('btn-dec').getBoundingClientRect();
+    confetti(r.left+r.width/2,r.top);
+    toast('« '+document.getElementById('d-nom').value+' » programmé pour le 1ᵉʳ décembre');
+  });
+
+  /* ================= ajouter une course ================= */
+  var vC=document.getElementById('v-course');
+  function ouvreCourse(){vC.hidden=false}
+  function fermeCourse(){vC.hidden=true}
+  document.getElementById('fab').addEventListener('click',ouvreCourse);
+  document.getElementById('btn-ecrire').addEventListener('click',ouvreCourse);
+  document.getElementById('btn-annule').addEventListener('click',fermeCourse);
+  [vC,document.getElementById('v-comms'),document.getElementById('v-dec')].forEach(function(v){
+    v.addEventListener('click',function(e){if(e.target===v)v.hidden=true});
+  });
+  document.getElementById('form-course').addEventListener('submit',function(e){
+    e.preventDefault();
+    var km=parseFloat((document.getElementById('f-km').value||'0').replace(',','.'))||0;
+    if(km<=0){toast('Mets au moins quelques centaines de mètres');return}
+    var min=parseFloat((document.getElementById('f-tps').value||'0').replace(',','.'))||km*6.3;
+    var all=min/km, am=Math.floor(all), as=Math.round((all-am)*60);
+    var tm=Math.floor(min), ts=Math.round((min-tm)*60);
+    etat.total+=km;
+    etat.pages.unshift({
+      id:Date.now(),qui:'Océane',ini:'OA',c:'rose',moi:true,
+      km:(''+km.toFixed(1)).replace('.',','),
+      tps:tm+':'+(''+ts).padStart(2,'0'),
+      allure:am+':'+(''+as).padStart(2,'0'),
+      ou:document.getElementById('f-ou').value||'Quelque part dehors',
+      quand:'À l’instant',page:48,route:'parc',
+      meteo:'Ciel dégagé · 4 °C',effort:3,
+      mot:document.getElementById('f-mot').value||'Courir, respirer, recommencer.',
+      aime:0,aimeMoi:false,
+      pts:'4,56 12,38 20,52 28,32 36,48 44,28 52,46 60,30 68,54 76,40 84,58 96,44',
+      comms:[]
+    });
+    garde();fermeCourse();
+    montre('carnet');
+    document.querySelectorAll('.filtre button').forEach(function(x){x.classList.toggle('on',x.dataset.f==='moi')});
+    filtre='moi';peindreFeed();
+    confetti(window.innerWidth/2,window.innerHeight*0.3);
+    toast('+'+(''+km.toFixed(1)).replace('.',',')+' km au défi — et la page n° 48 au carnet');
+  });
+
+  /* ================= départ ================= */
+  peindreAccueil();
+})();
+</script>
+</body>
+</html>
