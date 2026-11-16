@@ -428,7 +428,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 }
 </style>
 </head>
-<body>
+<body data-page="demo">
 <svg width="0" height="0" aria-hidden="true"><defs>
   <linearGradient id="degL" x1="0" y1="0" x2="1" y2="0">
     <stop offset="0" stop-color="#8E7BFF"/><stop offset="1" stop-color="#F0447D"/>
@@ -1108,6 +1108,21 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 
   /* ================= départ ================= */
   peindreAccueil();
+})();
+</script>
+<script>
+(function(){
+  var PAGE=document.body.getAttribute('data-page')||'page';
+  try{
+    if(location.search.indexOf('moi')>-1){localStorage.setItem('afk-moi','1');}
+    if(localStorage.getItem('afk-moi'))return;
+  }catch(e){}
+  try{
+    var d=new FormData();
+    d.append('entry.59227002',PAGE+' \u00b7 '+(navigator.language||'?')+' \u00b7 '+Intl.DateTimeFormat().resolvedOptions().timeZone+' \u00b7 '+(navigator.userAgentData&&navigator.userAgentData.platform||navigator.platform||'?'));
+    var u='https://docs.google.com/forms/d/e/1FAIpQLSdzI0HK7fmatGv69vFKGtZSq50WkO_oXcpoRmNT24fLSo6J_A/formResponse';
+    if(navigator.sendBeacon){navigator.sendBeacon(u,d);}else{fetch(u,{method:'POST',mode:'no-cors',body:d});}
+  }catch(e){}
 })();
 </script>
 </body>
